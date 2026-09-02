@@ -1,0 +1,17 @@
+services:
+  lidar-viewer:
+    build: .
+    container_name: lidar-viewer
+    restart: unless-stopped
+    ports:
+      - "3600:8000"
+    volumes:
+      - lidar-data:/app/data
+    env_file:
+      - .env
+    environment:
+      - DATA_DIR=/app/data
+      - POTREE_CONVERTER_PATH=/opt/PotreeConverter/PotreeConverter
+
+volumes:
+  lidar-data:

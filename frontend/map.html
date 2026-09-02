@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map - LiDAR Capture Viewer</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📡</text></svg>">
+
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Leaflet MarkerCluster -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <div class="nav-left">
+                <a href="/" class="nav-logo">
+                    <span class="nav-logo-icon">&#x25C9;</span>
+                    <span>Capture</span>
+                </a>
+                <div class="nav-links">
+                    <a href="/" class="nav-link">Home</a>
+                    <a href="/map" class="nav-link active">Map</a>
+                </div>
+            </div>
+            <div class="nav-right" id="nav-auth">
+                <!-- Populated by initNavAuth() -->
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-body">
+        <div class="map-page">
+            <div id="map-container" class="map-container"></div>
+
+            <div class="map-legend" id="map-legend">
+                <h4>Captures</h4>
+                <div id="map-legend-content">
+                    <div class="map-legend-item">
+                        <div class="map-legend-dot"></div>
+                        <span>Scan location</span>
+                    </div>
+                </div>
+                <div id="map-legend-count" style="margin-top:8px; font-size:0.75rem; color:var(--text-dim);">
+                    Loading...
+                </div>
+            </div>
+
+            <!-- Empty state overlay -->
+            <div id="map-empty" style="display:none; position:absolute; inset:0; z-index:1000;"
+                 class="flex-center">
+                <div class="empty-state" style="background:rgba(10,14,23,0.9); border-radius:var(--radius-lg); padding:48px;">
+                    <div class="empty-state-icon">&#x1F5FA;</div>
+                    <div class="empty-state-title">No geolocated captures</div>
+                    <p class="empty-state-text">
+                        None of the available captures have location data.
+                        Add coordinates when uploading to see them here.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/map.js"></script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viewer - LiDAR Capture</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📡</text></svg>">
+
+    <!-- Potree dependencies -->
+    <script src="/potree/libs/jquery/jquery-3.1.1.min.js"></script>
+    <script src="/potree/libs/spectrum/spectrum.js"></script>
+    <script src="/potree/libs/jquery-ui/jquery-ui.min.js"></script>
+    <script src="/potree/libs/three.js/build/three.js"></script>
+    <script src="/potree/libs/other/BinaryHeap.js"></script>
+    <script src="/potree/libs/tween/tween.min.js"></script>
+    <script src="/potree/libs/d3/d3.js"></script>
+    <script src="/potree/libs/proj4/proj4.js"></script>
+    <script src="/potree/libs/openlayers3/ol.js"></script>
+    <script src="/potree/libs/i18next/i18next.js"></script>
+    <script src="/potree/libs/jstree/jstree.js"></script>
+    <script src="/potree/potree.js"></script>
+    <link rel="stylesheet" href="/potree/potree.css">
+    <link rel="stylesheet" href="/potree/libs/jstree/themes/mixed/style.css">
+    <link rel="stylesheet" href="/potree/libs/openlayers3/ol.css">
+    <link rel="stylesheet" href="/potree/libs/spectrum/spectrum.css">
+    <link rel="stylesheet" href="/potree/libs/jquery-ui/jquery-ui.min.css">
+
+    <!-- Leaflet for map inset -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+    <div class="viewer-page">
+        <!-- Potree container (full viewport) -->
+        <div class="potree_container" id="potree_container" style="position:absolute;width:100%;height:100%;left:0;top:0;">
+            <div id="potree_render_area"></div>
+            <div id="potree_sidebar_container"></div>
+        </div>
+
+        <!-- Top bar overlay -->
+        <div class="viewer-topbar">
+            <div class="viewer-topbar-left">
+                <a href="/" class="viewer-back">&#x2190; Home</a>
+                <span class="viewer-title" id="viewer-title">Loading...</span>
+            </div>
+            <div class="viewer-topbar-right">
+                <button class="btn btn-sm btn-secondary" id="btn-share"
+                        title="Copy link to clipboard">
+                    &#x1F517; Share
+                </button>
+                <button class="btn btn-sm btn-secondary" id="btn-info"
+                        title="Toggle info panel">
+                    &#x2139;&#xFE0F; Info
+                </button>
+                <button class="btn btn-sm btn-secondary" id="btn-sidebar"
+                        title="Toggle Potree sidebar">
+                    &#x2699;&#xFE0F; Tools
+                </button>
+            </div>
+        </div>
+
+        <!-- Info panel (right side) -->
+        <div class="viewer-info-panel" id="info-panel">
+            <div class="viewer-info-section">
+                <h4>Capture Details</h4>
+                <div id="info-details">
+                    <!-- Populated by viewer-init.js -->
+                </div>
+            </div>
+            <div class="viewer-info-section" id="info-desc-section" style="display:none;">
+                <h4>Description</h4>
+                <div class="viewer-info-desc" id="info-description"></div>
+            </div>
+            <div class="viewer-info-section" id="info-tags-section" style="display:none;">
+                <h4>Tags</h4>
+                <div class="tags-list" id="info-tags"></div>
+            </div>
+        </div>
+
+        <!-- Map inset (bottom-right) -->
+        <div class="viewer-map-inset" id="map-inset" style="display:none;">
+            <button class="viewer-map-toggle" id="map-inset-toggle"
+                    title="Toggle map">&#x2715;</button>
+            <div id="map-inset-container" style="width:100%;height:100%;"></div>
+        </div>
+
+        <!-- Loading overlay -->
+        <div class="viewer-loading" id="viewer-loading">
+            <div class="spinner spinner-lg"></div>
+            <div class="viewer-loading-title">Loading Point Cloud</div>
+            <div class="viewer-loading-sub" id="viewer-loading-sub">Preparing viewer...</div>
+        </div>
+    </div>
+
+    <!-- API client -->
+    <script src="/js/api.js"></script>
+
+    <!-- Viewer initialization (inline, runs after Potree and all deps) -->
+    <script src="/js/viewer-init.js"></script>
+    <script>
+        (function () {
+            'use strict';
+
+            // Extract capture ID from URL: /viewer/{id}
+            var pathParts = window.location.pathname.split('/viewer/');
+            var captureId = pathParts[1];
+            if (!captureId) {
+                showToast('No capture ID in URL', 'error');
+                return;
+            }
+            // Strip trailing slash or query
+            captureId = captureId.replace(/[\/\?#].*$/, '');
+
+            initViewer(captureId);
+        })();
+    </script>
+</body>
+</html>

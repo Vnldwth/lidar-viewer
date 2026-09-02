@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LiDAR Capture Viewer</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📡</text></svg>">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <div class="nav-left">
+                <a href="/" class="nav-logo">
+                    <span class="nav-logo-icon">&#x25C9;</span>
+                    <span>Capture</span>
+                </a>
+                <div class="nav-links">
+                    <a href="/" class="nav-link active">Home</a>
+                    <a href="/map" class="nav-link">Map</a>
+                </div>
+            </div>
+            <div class="nav-right" id="nav-auth">
+                <!-- Populated by initNavAuth() -->
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-body">
+        <!-- Hero -->
+        <section class="hero">
+            <div class="container">
+                <h1>LiDAR Capture Viewer</h1>
+                <p class="hero-subtitle">
+                    Browse and explore 3D point cloud captures from Ouster OS1-64 sensors
+                    in an interactive viewer.
+                </p>
+            </div>
+            <div class="hero-scan-line"></div>
+        </section>
+
+        <!-- Filters -->
+        <section class="filter-bar">
+            <div class="container">
+                <div class="filter-bar-inner">
+                    <div class="filter-search">
+                        <span class="filter-search-icon">&#x1F50D;</span>
+                        <input type="text" class="input" id="gallery-search"
+                               placeholder="Search captures...">
+                    </div>
+                    <div class="filter-tags" id="gallery-tags">
+                        <!-- Populated by gallery.js -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gallery Loading -->
+        <div id="gallery-loading" class="flex-center" style="display:none; padding: 48px;">
+            <div class="spinner spinner-lg"></div>
+        </div>
+
+        <!-- Gallery Grid -->
+        <section class="container">
+            <div class="gallery-grid" id="gallery-grid">
+                <!-- Populated by gallery.js -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="gallery-empty" class="empty-state" style="display:none;">
+                <div class="empty-state-icon">&#x1F4E1;</div>
+                <div class="empty-state-title">No captures found</div>
+                <p class="empty-state-text">
+                    There are no point cloud captures matching your search.
+                    Try adjusting your filters.
+                </p>
+            </div>
+
+            <!-- Auth Prompt -->
+            <div id="auth-prompt" class="auth-prompt" style="display:none;">
+                <p>Sign in to access additional captures and features.</p>
+                <button class="btn btn-primary" onclick="API.login()">Sign In</button>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                LiDAR Capture Viewer &middot; Ouster OS1-64
+            </div>
+        </footer>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/gallery.js"></script>
+</body>
+</html>

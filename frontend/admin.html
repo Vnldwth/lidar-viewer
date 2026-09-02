@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - LiDAR Capture Viewer</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📡</text></svg>">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <div class="nav-left">
+                <a href="/" class="nav-logo">
+                    <span class="nav-logo-icon">&#x25C9;</span>
+                    <span>Capture</span>
+                </a>
+                <div class="nav-links">
+                    <a href="/" class="nav-link">Home</a>
+                    <a href="/map" class="nav-link">Map</a>
+                    <a href="/admin" class="nav-link active">Admin</a>
+                </div>
+            </div>
+            <div class="nav-right" id="nav-auth">
+                <!-- Populated by initNavAuth() -->
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-body">
+        <div class="container admin-page">
+
+            <!-- Header -->
+            <div class="admin-header">
+                <h1>Admin Panel</h1>
+            </div>
+
+            <!-- Dashboard Stats -->
+            <section class="admin-section" id="admin-stats-section">
+                <h2 class="mb-md">Dashboard</h2>
+                <div class="stats-grid" id="stats-grid">
+                    <!-- Populated by admin.js -->
+                </div>
+            </section>
+
+            <!-- Upload Section -->
+            <section class="admin-section">
+                <div class="admin-section-header">
+                    <h2>Upload Capture</h2>
+                    <button class="btn btn-sm btn-secondary" id="btn-toggle-upload"
+                            onclick="toggleUploadForm()">
+                        &#x2795; New Upload
+                    </button>
+                </div>
+
+                <div id="upload-form-wrap" style="display:none;">
+                    <div class="upload-form">
+                        <div class="dropzone" id="upload-dropzone">
+                            <div class="dropzone-icon">&#x1F4C1;</div>
+                            <div class="dropzone-text">
+                                <strong>Drop point cloud file here</strong> or click to browse
+                            </div>
+                            <div class="dropzone-hint">
+                                Supported: LAS, LAZ, PLY, PCD, XYZ, PTS, E57
+                            </div>
+                            <input type="file" id="upload-file"
+                                   accept=".las,.laz,.ply,.pcd,.xyz,.pts,.e57">
+                        </div>
+
+                        <div id="upload-file-info" class="mt-md text-sm text-muted" style="display:none;">
+                            Selected: <span id="upload-file-name"></span>
+                            (<span id="upload-file-size"></span>)
+                        </div>
+
+                        <div class="grid mt-lg" style="gap:16px;">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="up-title">Title</label>
+                                    <input class="input" type="text" id="up-title"
+                                           placeholder="e.g. Downtown Park Scan">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="up-visibility">Visibility</label>
+                                    <select class="select" id="up-visibility">
+                                        <option value="public">Public</option>
+                                        <option value="authenticated">Authenticated</option>
+                                        <option value="private">Private</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="up-description">Description</label>
+                                <textarea class="textarea" id="up-description" rows="3"
+                                          placeholder="Brief description of the capture..."></textarea>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="up-location">Location Name</label>
+                                    <input class="input" type="text" id="up-location"
+                                           placeholder="e.g. Golden Gate Park">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="up-sensor">Sensor Model</label>
+                                    <input class="input" type="text" id="up-sensor"
+                                           placeholder="e.g. Ouster OS1-64" value="Ouster OS1-64">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="up-lat">Latitude</label>
+                                    <input class="input" type="number" step="any" id="up-lat"
+                                           placeholder="37.7749">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="up-lng">Longitude</label>
+                                    <input class="input" type="number" step="any" id="up-lng"
+                                           placeholder="-122.4194">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="up-date">Capture Date</label>
+                                    <input class="input" type="date" id="up-date">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="up-tags">Tags</label>
+                                    <input class="input" type="text" id="up-tags"
+                                           placeholder="outdoor, urban, park">
+                                    <span class="form-hint">Comma-separated</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-lg flex-between">
+                            <button class="btn btn-secondary" onclick="toggleUploadForm()">Cancel</button>
+                            <button class="btn btn-primary" id="btn-upload" onclick="doUpload()">
+                                Upload Capture
+                            </button>
+                        </div>
+
+                        <div class="upload-progress" id="upload-progress">
+                            <div class="progress-bar">
+                                <div class="progress-bar-fill" id="upload-progress-bar"></div>
+                            </div>
+                            <div class="progress-text" id="upload-progress-text">Uploading...</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Captures Table -->
+            <section class="admin-section">
+                <div class="admin-section-header">
+                    <h2>Captures</h2>
+                    <button class="btn btn-sm btn-secondary" onclick="loadAdminCaptures()">
+                        &#x21BB; Refresh
+                    </button>
+                </div>
+
+                <div id="captures-loading" class="flex-center" style="padding:32px;">
+                    <div class="spinner"></div>
+                </div>
+
+                <div class="admin-table-wrap" id="captures-table-wrap" style="display:none;">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th class="thumb-cell"></th>
+                                <th>Title</th>
+                                <th>Status</th>
+                                <th>Visibility</th>
+                                <th>Points</th>
+                                <th>Size</th>
+                                <th>Date</th>
+                                <th class="actions-cell">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="captures-tbody">
+                            <!-- Populated by admin.js -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="captures-empty" class="empty-state" style="display:none;">
+                    <div class="empty-state-icon">&#x1F4E6;</div>
+                    <div class="empty-state-title">No captures yet</div>
+                    <p class="empty-state-text">Upload your first point cloud capture to get started.</p>
+                </div>
+            </section>
+
+            <!-- Users Table -->
+            <section class="admin-section">
+                <div class="admin-section-header">
+                    <h2>Users</h2>
+                </div>
+
+                <div class="admin-table-wrap" id="users-table-wrap" style="display:none;">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Admin</th>
+                                <th>Groups</th>
+                                <th>Last Login</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-tbody">
+                            <!-- Populated by admin.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div class="modal-overlay" id="edit-modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Edit Capture</h3>
+                <button class="modal-close" onclick="closeEditModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="edit-id">
+                <div class="grid" style="gap:16px;">
+                    <div class="form-group">
+                        <label class="form-label" for="edit-title">Title</label>
+                        <input class="input" type="text" id="edit-title">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="edit-description">Description</label>
+                        <textarea class="textarea" id="edit-description" rows="3"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="edit-visibility">Visibility</label>
+                            <select class="select" id="edit-visibility">
+                                <option value="public">Public</option>
+                                <option value="authenticated">Authenticated</option>
+                                <option value="private">Private</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="edit-sensor">Sensor Model</label>
+                            <input class="input" type="text" id="edit-sensor">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="edit-location">Location Name</label>
+                        <input class="input" type="text" id="edit-location">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="edit-lat">Latitude</label>
+                            <input class="input" type="number" step="any" id="edit-lat">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="edit-lng">Longitude</label>
+                            <input class="input" type="number" step="any" id="edit-lng">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="edit-date">Capture Date</label>
+                            <input class="input" type="date" id="edit-date">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="edit-tags">Tags</label>
+                            <input class="input" type="text" id="edit-tags"
+                                   placeholder="Comma-separated">
+                        </div>
+                    </div>
+
+                    <!-- Access list (for private captures) -->
+                    <div id="edit-access-section" style="display:none;">
+                        <div class="form-group">
+                            <label class="form-label" for="edit-access-emails">Allowed Emails</label>
+                            <input class="input" type="text" id="edit-access-emails"
+                                   placeholder="user@example.com, other@example.com">
+                            <span class="form-hint">Comma-separated email addresses</span>
+                        </div>
+                        <div class="form-group mt-sm">
+                            <label class="form-label" for="edit-access-groups">Allowed Groups</label>
+                            <input class="input" type="text" id="edit-access-groups"
+                                   placeholder="group1, group2">
+                            <span class="form-hint">Comma-separated group names</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveEdit()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay" id="delete-modal-overlay">
+        <div class="modal" style="max-width:420px;">
+            <div class="modal-header">
+                <h3>Delete Capture</h3>
+                <button class="modal-close" onclick="closeDeleteModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete <strong id="delete-capture-name"></strong>?</p>
+                <p class="text-sm text-muted mt-sm">
+                    This will permanently remove the point cloud data and cannot be undone.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+                <button class="btn btn-danger" id="btn-confirm-delete" onclick="confirmDelete()">
+                    Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/admin.js"></script>
+</body>
+</html>
