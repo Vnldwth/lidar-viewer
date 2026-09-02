@@ -1,24 +1,28 @@
 FROM python:3.11-slim AS base
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        git curl ca-certificates libtbb12 \
+        git curl ca-certificates libtbb12 unzip \
     && rm -rf /var/lib/apt/lists/*
 
-# PotreeConverter 2.1
-RUN mkdir -p /opt/PotreeConverter && \
-    curl -fSL -o /tmp/pc.tar.gz \
-      "https://github.com/potree/PotreeConverter/releases/download/2.1.1/PotreeConverter_2.1.1_x64_linux.tar.gz" && \
-    tar xzf /tmp/pc.tar.gz -C /opt/PotreeConverter --strip-components=1 && \
-    rm /tmp/pc.tar.gz && \
+# PotreeConverter 2.1.2
+RUN curl -fSL -o /tmp/pc.zip \
+      "https://github.com/potree/PotreeConverter/releases/download/2.1.2/PotreeConverter_2.1.2_x64_linux.zip" && \
+    unzip /tmp/pc.zip -d /tmp/pc && \
+    mv /tmp/pc/PotreeConverter_* /opt/PotreeConverter && \
+    rm -rf /tmp/pc.zip /tmp/pc && \
     chmod +x /opt/PotreeConverter/PotreeConverter
 
-# Potree viewer library (built files are committed in the repo)
-RUN git clone --depth 1 https://github.com/potree/potree.git /tmp/potree && \
+# Potree 1.8.2 viewer library
+RUN curl -fSL -o /tmp/potree.zip \
+      "https://github.com/potree/potree/releases/download/1.8.2/Potree_1.8.2.zip" && \
+    unzip -q /tmp/potree.zip -d /tmp/potree && \
     mkdir -p /app/frontend/potree && \
-    cp -r /tmp/potree/build/potree/* /app/frontend/potree/ && \
-    cp -r /tmp/potree/libs /app/frontend/potree/libs && \
-    cp -r /tmp/potree/resources /app/frontend/potree/resources && \
-    rm -rf /tmp/potree
+    cp -r /tmp/potree/Potree_1.8.2/libs /app/frontend/potree/libs && \
+    cp -r /tmp/potree/Potree_1.8.2/build/potree/resources /app/frontend/potree/resources && \
+    cp -r /tmp/potree/Potree_1.8.2/build/potree/lazylibs /app/frontend/potree/lazylibs && \
+    cp /tmp/potree/Potree_1.8.2/build/potree/potree.js /app/frontend/potree/ && \
+    cp /tmp/potree/Potree_1.8.2/build/potree/potree.css /app/frontend/potree/ && \
+    rm -rf /tmp/potree.zip /tmp/potree
 
 WORKDIR /app
 
